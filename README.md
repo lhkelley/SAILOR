@@ -101,7 +101,7 @@ for FASTQ in ${FASTQ[@]}; do
     --outFilterMultimapNmax 1 \  # Set the maximum number of loci that a read is allowed to map to
     --outFilterScoreMinOverLread .66 \  # Set the minimum alignment score, scaled by read length
     --outFilterMismatchNmax 10 \  # Set the maximum number of mismatches allowed per read
-    --outFilterMismatchNoverLmax .3 \
+    #--outFilterMismatchNoverLmax .3 \  # Set the maximum number of mismatches allowed per read, scaled by read length. I'm omitting it because Nmax supersedes it.
     --runMode alignReads \
     --genomeDir genome/index \
     --readFilesIn $FASTQ \
@@ -111,7 +111,7 @@ for FASTQ in ${FASTQ[@]}; do
 done
 ```
 
-####```--outFilterMultimapNmax```:
+#### ```--outFilterMultimapNmax```:
 
 This parameter sets the maximum number of loci that a read is allowed to map to. You can input a range as well.
 
@@ -125,19 +125,120 @@ If a read maps to > N loci --> STAR discards the read entirely (not reported in 
 
 When **identifying edit sites** you do not want a read that maps to multiple locations, so set this parameter to 1.
 
-####```--outFilterScoreMinOverLread```
+#### ```--outFilterScoreMinOverLread```
 
 ```minScore = readLength × outFilterScoreMinOverLread```
 
 ```readLength``` = length of the read in bases
+
 ```outFilterScoreMinOverLread``` = fraction of read length required to be aligned well
 
 The score that STAR assigns to each read is based on matches, mismatches, and gap. Matches are positive and mismatches/gaps are negative. A perfect alignment would be a score that equals the read's length. The length of the reads depends on your RNA-seq experimental design (AKA what you told the sequencing facility). Common read lengths for single end RNA-seq experiments are 75 and 100 bp.
 
 If ```--outFilterScoreMinOverLread``` is set t0 0.66, that means if you have 100 bp reads, then ```100 x 0.66 = 66```, so a read must have a score of at least 66 to be kept, meaning two-thirds of the read align.
 
-####```--outFilterMismatchNmax```
+#### ```--outFilterMismatchNmax``` and ```---outFilterMismatchNoverLmax```
 
-This sets the maximum number of mismatches allowed per read. Setting this to 10 means that you're allowing 10% of the read have mismatches.
+```Nmax``` sets the maximum number of mismatches allowed per read. This is a strict cap. Setting this to 10 means that you're allowing 10% of the read have mismatches.
 
 For identifying and quantifying editing sites, it's important to include mismatches because **edits are mismatches to the genome.** Not sure how to empirically determine this parameter yet.
+
+```NoverLmax``` sets the maximum number of mismatches by a relative cap, scaling with read length. This is a functional cap. If you have 100 bp reads and set this parameter to 0.3, then ```100 x 0.3 = 30``` so reads with 30 mismatches would be allowed through.
+
+However, for short read lengths (i.e. 100 bp), if the ```Nmax``` parameter is smaller than  ```NoverLmax```, ```Nmax`` supersedes ```NoverLmax```.
+
+### Checking the alignment
+
+After running the STAR align, the BAMs and output files should be in ```results/align```.
+
+```console
+cd results/align
+```
+Check the number of uniquely aligned reads for each sample. Here is a command that will pull this information from each of the STAR output log files and will combine it into one table:
+
+```console
+awk 'BEGIN{OFS="\t"; print "Sample","UniquelyMappedReads","UniquelyMappedReadsPercent"}
+FNR==1{sample=FILENAME; sub(/.*\//,"",sample); sub(/\.Log\.final\.out$/,"",sample)}
+/Uniquely mapped reads number/ {num=$NF}
+/Uniquely mapped reads %/ {pct=$NF; print sample,num,pct}' *_Log.final.out > GSF4254_STAR_uniquely_mapped_summary.txt
+```
+### SAILOR (through FLARE)
+
+Make a directory for SAILOR:
+
+```console
+mkdir sailor
+```
+This should contain:
+* Your ```bam``` files (merged or unmerged, see below)
+* A ```bed``` file of known SNPs
+* ```workflow_sailor``` directory containing scripts and Snakefile
+
+Now you need to create a .json file that will be used to specify the parameters for the workflow (input files, reference files, etc.). Example below:
+
+```console
+{
+  "samples_path":"/N/slate/lhkelley/GSF4254/sailor/",
+  "samples": [
+    "GSF4254-N2.merged.bam",  # List bam files here
+  ],
+  "reverse_stranded":true,  # This depends on your library prep and sequencing machine
+  "reference_fasta": "/N/slate/lhkelley/GSF4254/genome/assembly.fasta",
+  "known_snps": "/N/slate/lhkelley/GSF4254/sailor/c.elegans.WS275.snps.nostrand.sorted.bed",
+  "edit_type": "AG",  # The type of edits you're looking for (A to I edits would be AG here)
+  "output_dir": "/N/slate/lhkelley/GSF4254/results/fromSAILOR_N2results"
+}
+```
+Then you run the command:
+
+```console
+snakemake \
+  --snakefile /N/slate/lhkelley/GSF2848/sailor/workflow_sailor/Snakefile \
+  --configfile /N/slate/lhkelley/GSF2848/sailor/run-sailor-GSF2848-adr2.json \
+  --use-singularity \
+  --singularity-args "\ 
+    --bind /N/slate/lhkelley/GSF2848 \
+    --bind /N/slate/lhkelley/GSF2848/genome \
+    --bind /N/slate/lhkelley/GSF2848/sailor/workflow_sailor/scripts \
+    --bind /N/slate/lhkelley/GSF2848/sailor/workflow_sailor \
+    --bind /N/slate/lhkelley/GSF2848/ranSailor_adr2" \
+  -j1
+```
+The ```singularity-args``` allows you to list extra arguments to pass to the Singularity command. The ```--bind``` mounts a host directory inside the Singularity container, which is necessary because the containers have their own filtesystem, so any input files, scripts, etc. must be accessible from inside the container.
+
+The ```-j1``` parameter specifies to run one job at a time.
+
+#### Brief overview of what the Snakefile is doing
+
+* Indexes the input BAM files using ```samtools```
+* Split the strands in the BAM files into forward and reverse
+* Remove duplicate reads with ```samtools rmdup``` [need to change to ```samtools markdup```]
+* Indexes the reads
+* Generates bigWif coverage files
+* Filters the reads based on edit type, junction overhang, etc.
+* Creates pileups using ```samtools mpileup```
+* Calls variants (SNVs) with ```bcftools call_snvs```
+* Process and filters variant calls
+* Ranks the RNA editing sites (??)
+* Combines forward and reverse strands into same file
+* Produces a bedgraph of editing fractions
+
+The output will be in the directory that you specificed above (last of the ```-bind``` arguments) and will contain many things:
+
+```console
+1_split_strands
+3_index_reads
+4_filter_reads
+5_pileup_reads
+6_vcfs
+7_scored_outputs
+8_bw_and_bam
+9_edit_fraction_bedgraphs
+subsampled.bam.combined.readfiltered.formatted.varfiltered.snpfiltered.ranked.bed
+```
+But the final out are the ```ranked.bed``` files in the ```7_scored_outputs``` directory. There will be separate files for the forward and reverse strands.
+
+### SAILOR annotation (through FLARE)
+
+Now that we know the 
+
