@@ -86,7 +86,6 @@ Still in :
 
 ```console
 cd /N/slate/lhkelley/GSF4254/
-conda activate rnaseq
 ```
 
 Create a variable so that all files that start with GSF4254 (should only be FASTQ files) will be used as input in the STAR mapping command:
@@ -94,17 +93,14 @@ Create a variable so that all files that start with GSF4254 (should only be FAST
 ```console
 FASTQ=$GSF2848*
 ```
-
-
-
 ```console
 for FASTQ in ${FASTQ[@]}; do
   PREFIX=results/aligned/$(basename $FASTQ .fastq)_
   STAR \
     --runThreadN 8 \  # Uses 8 threads in parallel
-    --outFilterMultimapNmax 1 \  # Set the maximum number of loci that a read is allowed to map to (how STAR should handle multi-mapping reads)
-    --outFilterScoreMinOverLread .66 \
-    --outFilterMismatchNmax 10 \
+    --outFilterMultimapNmax 1 \  # Set the maximum number of loci that a read is allowed to map to
+    --outFilterScoreMinOverLread .66 \  # Set the minimum alignment score, scaled by read length
+    --outFilterMismatchNmax 10 \  # Set the maximum number of mismatches allowed per read
     --outFilterMismatchNoverLmax .3 \
     --runMode alignReads \
     --genomeDir genome/index \
@@ -115,7 +111,8 @@ for FASTQ in ${FASTQ[@]}; do
 done
 ```
 
-```--outFilterMultimapNmax```:
+####```--outFilterMultimapNmax```:
+
 This parameter sets the maximum number of loci that a read is allowed to map to. You can input a range as well.
 
 If a read maps to =< N loci --> STAR keeps the read and reports all alignments (up to N)
@@ -125,3 +122,22 @@ If a read maps to > N loci --> STAR discards the read entirely (not reported in 
 ```--outFilterMultimapNmax 1``` would only keep uniquely mapped reads and discards read that map to more than 1 locus. Typically, in RNA-seq experiments where you might want to look at differential expression, you would want to only keep unique reads.
 
 ```--outFilterMultimapNmax 10``` will keep reads that map to up to 10 loci. They will all be reported in the BAM file.
+
+When **identifying edit sites** you do not want a read that maps to multiple locations, so set this parameter to 1.
+
+####```--outFilterScoreMinOverLread```
+
+```minScore = readLength × outFilterScoreMinOverLread```
+
+```readLength``` = length of the read in bases
+```outFilterScoreMinOverLread``` = fraction of read length required to be aligned well
+
+The score that STAR assigns to each read is based on matches, mismatches, and gap. Matches are positive and mismatches/gaps are negative. A perfect alignment would be a score that equals the read's length. The length of the reads depends on your RNA-seq experimental design (AKA what you told the sequencing facility). Common read lengths for single end RNA-seq experiments are 75 and 100 bp.
+
+If ```--outFilterScoreMinOverLread``` is set t0 0.66, that means if you have 100 bp reads, then ```100 x 0.66 = 66```, so a read must have a score of at least 66 to be kept, meaning two-thirds of the read align.
+
+####```--outFilterMismatchNmax```
+
+This sets the maximum number of mismatches allowed per read. Setting this to 10 means that you're allowing 10% of the read have mismatches.
+
+For identifying and quantifying editing sites, it's important to include mismatches because **edits are mismatches to the genome.** Not sure how to empirically determine this parameter yet.
