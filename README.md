@@ -145,7 +145,7 @@ For identifying and quantifying editing sites, it's important to include mismatc
 
 ```NoverLmax``` sets the maximum number of mismatches by a relative cap, scaling with read length. This is a functional cap. If you have 100 bp reads and set this parameter to 0.3, then ```100 x 0.3 = 30``` so reads with 30 mismatches would be allowed through.
 
-However, for short read lengths (i.e. 100 bp), if the ```Nmax``` parameter is smaller than  ```NoverLmax```, ```Nmax`` supersedes ```NoverLmax```.
+However, for short read lengths (i.e. 100 bp), if the ```Nmax``` parameter is smaller than  ```NoverLmax```, ```Nmax``` supersedes ```NoverLmax```.
 
 ### Checking the alignment
 
