@@ -71,11 +71,47 @@ Additional details on ```--genomeSAindexNbases```:
 The suffix array is like a dictionary, so that STAR can quickly look up reads. However, instead of searching the entire genome for the entire legnth of a read, the SA index allows STAR to look at the first *k* bases of the read.
 
 If *k* is too small = the k-mers won't be unique enough and STAR will have to scan more of the entries in the SA (slow mapping)
+
 If *k* is too large = the index becomes large, requiring more memory
 
-This is the calculation: genomeSAindexNbases (k) ≈ log2​(genomeLength)/2 − 1
+This is the calculation: ```genomeSAindexNbases (k) ≈ log2​(genomeLength)/2 − 1```
+
 The *C. elegans* genome is roughly 100 Mb, so using 12 is appropriate.
 
 Outputs will be in genome/index.
+
+### Align the reads
+
+Still in :
+
+```console
+cd /N/slate/lhkelley/GSF4254/
+conda activate rnaseq
+```
+Create a variable so that all files that start with GSF4254 (should only be FASTQ files) will be used as input in the STAR mapping command:
+
+```console
+FASTQ=$GSF2848*
+```
+
+
+```console
+for FASTQ in ${FASTQ[@]}; do
+  PREFIX=results/aligned/$(basename $FASTQ .fastq)_
+  STAR \
+    --runThreadN 8 \
+    --outFilterMultimapNmax 1 \
+    --outFilterScoreMinOverLread .66 \
+    --outFilterMismatchNmax 10 \
+    --outFilterMismatchNoverLmax .3 \
+    --runMode alignReads \
+    --genomeDir genome/index \
+    --readFilesIn $FASTQ \
+    --outFileNamePrefix $PREFIX \
+    --outSAMattributes All \
+    --outSAMtype BAM SortedByCoordinate
+done
+```
+
 
 
