@@ -88,6 +88,7 @@ Still in :
 cd /N/slate/lhkelley/GSF4254/
 conda activate rnaseq
 ```
+
 Create a variable so that all files that start with GSF4254 (should only be FASTQ files) will be used as input in the STAR mapping command:
 
 ```console
@@ -95,12 +96,13 @@ FASTQ=$GSF2848*
 ```
 
 
+
 ```console
 for FASTQ in ${FASTQ[@]}; do
   PREFIX=results/aligned/$(basename $FASTQ .fastq)_
   STAR \
-    --runThreadN 8 \
-    --outFilterMultimapNmax 1 \
+    --runThreadN 8 \  # Uses 8 threads in parallel
+    --outFilterMultimapNmax 1 \  # Set the maximum number of loci that a read is allowed to map to (how STAR should handle multi-mapping reads)
     --outFilterScoreMinOverLread .66 \
     --outFilterMismatchNmax 10 \
     --outFilterMismatchNoverLmax .3 \
@@ -113,5 +115,13 @@ for FASTQ in ${FASTQ[@]}; do
 done
 ```
 
+```--outFilterMultimapNmax```:
+This parameter sets the maximum number of loci that a read is allowed to map to. You can input a range as well.
 
+If a read maps to =< N loci --> STAR keeps the read and reports all alignments (up to N)
 
+If a read maps to > N loci --> STAR discards the read entirely (not reported in BAM)
+
+```--outFilterMultimapNmax 1``` would only keep uniquely mapped reads and discards read that map to more than 1 locus. Typically, in RNA-seq experiments where you might want to look at differential expression, you would want to only keep unique reads.
+
+```--outFilterMultimapNmax 10``` will keep reads that map to up to 10 loci. They will all be reported in the BAM file.
