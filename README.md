@@ -91,7 +91,7 @@ cd /N/slate/lhkelley/GSF4254/
 Create a variable so that all files that start with GSF4254 (should only be FASTQ files) will be used as input in the STAR mapping command:
 
 ```console
-FASTQ=$GSF2848*
+FASTQ=$GSF4254*
 ```
 ```console
 for FASTQ in ${FASTQ[@]}; do
