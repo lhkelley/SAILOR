@@ -214,7 +214,7 @@ The ```-j1``` parameter specifies to run one job at a time.
 * Split the strands in the BAM files into forward and reverse
 * Remove duplicate reads with ```samtools rmdup``` [need to change to ```samtools markdup```]
 * Indexes the reads
-* Generates bigWif coverage files
+* Generates bigWig coverage files
 * Filters the reads based on edit type, junction overhang, etc.
 * Creates pileups using ```samtools mpileup```
 * Calls variants (SNVs) with ```bcftools call_snvs```
