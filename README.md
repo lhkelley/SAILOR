@@ -10,7 +10,8 @@ Access IU's supercomputer, Quartz, but using the remote desktop server, ThinLinc
 Once at the terminal:
 
 ```console
-module load miniconda
+module load conda
+module load apptainer
 ```
 To check that miniconda is loaded, run:
 
