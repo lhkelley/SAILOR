@@ -7,11 +7,11 @@ Access IU's supercomputer, Quartz, using the remote desktop server, ThinLinc, on
 
 Once your on the remote desktop, open the terminal (shown below):
 
-<img width="946" height="480" alt="remote-desktop-terminal" src="https://github.com/user-attachments/assets/84790ec6-286a-45c2-b946-fbfb6819f0e3" /> <br><br>
+<br><br> <img width="946" height="480" alt="remote-desktop-terminal" src="https://github.com/user-attachments/assets/84790ec6-286a-45c2-b946-fbfb6819f0e3" /> <br><br>
 
 Once at the terminal, you should see something like this:
 
-![Terminal](https://github.com/user-attachments/assets/70abd7d8-e748-4f0b-bc0c-61423df3a14e) <br><br>
+<br><br> ![Terminal](https://github.com/user-attachments/assets/70abd7d8-e748-4f0b-bc0c-61423df3a14e) <br><br>
 
 Once there, run the following commands to load preset modules:
 
@@ -38,7 +38,7 @@ Now we'll create a conda environment and load it with the programs/packages we'l
 conda create -n rnaseq -c conda-forge -c bioconda entrez-direct sra-tools==3.1.1 fastqc seqtk star samtools subread
 conda activate rnaseq
 ```
-Note: Use conda list to check your version of sra-tools and change if needed in above line.
+Note: Use ```conda list``` to check your version of sra-tools and change if needed in above line.
 
 ## Transferring RNA-seq files to your working space
 
