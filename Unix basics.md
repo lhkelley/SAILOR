@@ -7,12 +7,11 @@ Access IU's supercomputer, Quartz, using the remote desktop server, ThinLinc, on
 
 Once your on the remote desktop, open the terminal (shown below):
 
-<img width="946" height="480" alt="remote-desktop-terminal" src="https://github.com/user-attachments/assets/84790ec6-286a-45c2-b946-fbfb6819f0e3" />
-
+<img width="946" height="480" alt="remote-desktop-terminal" src="https://github.com/user-attachments/assets/84790ec6-286a-45c2-b946-fbfb6819f0e3" /> <br><br>
 
 Once at the terminal, you should see something like this:
 
-![Terminal](https://github.com/user-attachments/assets/70abd7d8-e748-4f0b-bc0c-61423df3a14e)
+![Terminal](https://github.com/user-attachments/assets/70abd7d8-e748-4f0b-bc0c-61423df3a14e) <br><br>
 
 Once there, run the following commands to load preset modules:
 
