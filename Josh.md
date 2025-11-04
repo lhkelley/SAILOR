@@ -1,6 +1,3 @@
-# SAILOR
-General use of SAILOR
-
 ## Navigating to your supercomputer space
 
 Access IU's supercomputer, Quartz, using the remote desktop server, ThinLinc, on your personal computer.
