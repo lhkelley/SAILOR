@@ -5,8 +5,6 @@ General use of SAILOR
 
 Access IU's supercomputer, Quartz, but using the remote desktop server, ThinLinc, on your personal computer.
 
-[details]
-
 Once at the terminal:
 
 ```console
@@ -33,7 +31,7 @@ conda create -n rnaseq -c conda-forge -c bioconda entrez-direct sra-tools==3.1.1
 conda activate rnaseq
 ```
 
-Note: #Use conda list to check your version of sra-tools and change if needed in above line.
+Note: Use conda list to check your version of sra-tools and change if needed in above line.
 
 Move into your Slate directory and make a directory for the dataset that you will be analyzing
 
