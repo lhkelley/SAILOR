@@ -61,3 +61,13 @@ Now if you move into the directory and list out the contents, you should be able
 cd For_Josh
 ls
 ```
+## Sanity checks with the FASTQ files
+
+Each FASTQ file is a replicate and there are three replicates each for wildtype (strain is called N2) and the _adr-2(-)_ mutant.
+
+You can see how many reads are in each FASTQ file with the following command (replace the file name with the file you want to count the reads in):
+
+```
+wc -l yourfile.fastq
+```
+You should determine how many reads are in each FASTQ file because this information is important for downstream steps like mapping (you'll want to know how many reads mapped out of the total number of reads you started with, etc.).
