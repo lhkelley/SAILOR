@@ -129,10 +129,9 @@ Align reads to genome:
 
 ```console
 
-FASTQ=$GSF4254*
+for FASTQ in *.fastq; do
+  PREFIX=“$(basename $FASTQ .fastq)_”
 
-for FASTQ in ${FASTQ[@]}; do
-  PREFIX=results/aligned/$(basename $FASTQ .fastq)_
   STAR \
     --runThreadN 8 \  # Uses 8 threads in parallel
     --outFilterMultimapNmax 1 \  # Set the maximum number of loci that a read is allowed to map to
