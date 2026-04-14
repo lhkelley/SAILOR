@@ -197,7 +197,7 @@ SAILOR is run by replacing variable names (file names, etc.) in a ```.json``` fi
 nano
 ```
 
-Copy and paste the ```.json``` template below into ```nano``` and then replace the file paths, etc. with yours.
+Copy and paste the ```.json``` template below into ```nano``` and then replace the file paths, etc. with yours. Then, exit ```nano```.
 
 ```console
 {
@@ -212,7 +212,7 @@ Copy and paste the ```.json``` template below into ```nano``` and then replace t
   "output_dir": "/N/slate/lhkelley/GSF4254/results/fromSAILOR_N2results"
 }
 ```
-Then you run the command:
+Then you run the command, replacing file paths/names with your own:
 
 ```console
 snakemake \
