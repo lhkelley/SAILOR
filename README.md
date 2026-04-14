@@ -175,7 +175,29 @@ This should contain:
 * A ```bed``` file of known SNPs
 * ```workflow_sailor``` directory containing scripts and Snakefile
 
-Now you need to create a .json file that will be used to specify the parameters for the workflow (input files, reference files, etc.). Example below:
+### Obtain SAILOR code
+
+Go to the Hundley Lab project space and confirm that hte SAILOR workflow directory is there:
+```
+cd N/project/HundleyLab/FLARE
+ls
+# This should have the workflow_sailor directory
+```
+
+Transfer the workflow directory to your working directory (replace what I have below with your information):
+```
+scp -r workflow_sailor lhkelley@bigred200.uits.iu.edu:/N/slate/lhkelley/GSF2848
+```
+
+### Run SAILOR
+
+SAILOR is run by replacing variable names (file names, etc.) in a ```.json``` file that calls and runs the SAILOR script. We have the base ```.json```, you just need to edit it to be specific for your analysis. This is best done by using the ```nano``` command.
+
+```
+nano
+```
+
+Copy and paste the ```.json``` template below into ```nano``` and then replace the file paths, etc. with yours.
 
 ```console
 {
