@@ -239,7 +239,3 @@ subsampled.bam.combined.readfiltered.formatted.varfiltered.snpfiltered.ranked.be
 ```
 But the final out are the ```ranked.bed``` files in the ```7_scored_outputs``` directory. There will be separate files for the forward and reverse strands.
 
-### SAILOR annotation (through FLARE)
-
-Now that we know the 
-
