@@ -33,10 +33,12 @@ conda activate rnaseq
 
 Note: Use conda list to check your version of sra-tools and change if needed in above line.
 
-Move into your Slate directory and make a directory for the dataset that you will be analyzing
+Move into your Slate directory and make a directory for the dataset that you will be analyzing (example below).
 
+```
 cd /N/slate/lhkelley
 mkdir GSF2848
+```
 
 ## Analyzing GSF4254 (*glh-1* and *glh-2* short read RNA-seq)
 
