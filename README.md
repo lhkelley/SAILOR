@@ -261,3 +261,24 @@ subsampled.bam.combined.readfiltered.formatted.varfiltered.snpfiltered.ranked.be
 ```
 But the final out are the ```ranked.bed``` files in the ```7_scored_outputs``` directory. There will be separate files for the forward and reverse strands.
 
+### Run SAILOR annotation
+
+Copy the SAILOR annotation script (```annotator.sailor.py```) to your working directory. Located here:
+```
+/N/project/HundleyLab/FLARE/workflow_sailor_annotation
+```
+
+Install ```pybedtools```:
+```
+conda install -c bioconda pybedtools
+```
+
+How to see the help menu:
+```
+python3 annotator.sailor.py -h
+```
+
+Example of line of code to run (replace with your files, etc.):
+```
+python3 annotator.sailor.py --gtf c_elegans.PRJNA13758.WS275.canonical_geneset.gtf --fwd GSF2848-EE-adr-2.merged.fwd.sorted.rmdup.readfiltered.formatted.varfiltered.snpfiltered.ranked.bed --rev GSF2848-EE-adr-2.merged.rev.sorted.rmdup.readfiltered.formatted.varfiltered.snpfiltered.ranked.bed --wb c.elegans.WS275.annotation.final.bed --o /N/slate/emierdma/GSF2848/sailor/adr-2.annotated.sites.csv
+```
